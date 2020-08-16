@@ -71,9 +71,13 @@ EOS
   end
 
   def test_trace_tree
-    rt = @a.recursivar(out: @sio, name: :testing)
+    rt = @a.recursivar(out: @sio, name: :testing, color: false)
     @sio.rewind
 
     assert_equal ReturnValue, @sio.read
+  end
+
+  def test_normale_print
+    @a.recursivar
   end
 end

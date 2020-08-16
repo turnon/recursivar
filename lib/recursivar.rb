@@ -22,9 +22,10 @@ class Recursivar
       return if @ref = seen[obj_id]
       seen[obj_id] = self
 
+      klass = self.class
       obj.instance_variables.map do |name|
         value = obj.instance_variable_get(name)
-        @vars << Var.new(name, value, location.dup, seen)
+        @vars << klass.new(name, value, location.dup, seen)
       end
     end
 
@@ -48,11 +49,31 @@ class Recursivar
     end
   end
 
+  module Color
+    def label
+      "#{colorize name} (#{obj.class})"
+    end
+
+    def location_str
+      colorize super
+    end
+
+    private
+
+    def colorize(str)
+      "\e[1m\e[32m#{str}\e[0m"
+    end
+  end
+
   attr_reader :start
 
-  def initialize(obj, out: STDOUT, name: nil)
+  def initialize(obj, out: STDOUT, name: nil, color: true)
     name ||= "#<#{obj.object_id}>"
-    @start = Var.new(name, obj, [], {})
+
+    var_klass = Var.clone
+    var_klass = var_klass.prepend Color if color
+
+    @start = var_klass.new(name, obj, [], {})
     @out = out
   end
 
