@@ -10,12 +10,13 @@ end
 class Recursivar
 
   class Var
-    attr_reader :name, :obj, :ref, :vars
+    attr_reader :name, :obj, :ref, :vars, :location
 
-    def initialize(name, obj, seen)
+    def initialize(name, obj, path, seen)
       @name = name
       @obj = obj
       @vars = []
+      @location = (path << name)
 
       obj_id = obj.object_id
       return if @ref = seen[obj_id]
@@ -23,15 +24,23 @@ class Recursivar
 
       obj.instance_variables.map do |name|
         value = obj.instance_variable_get(name)
-        label = "#{name} (#{value.class})"
-        @vars << Var.new(label, value, seen)
+        @vars << Var.new(name, value, location.dup, seen)
       end
+    end
+
+    def label
+      "#{name} (#{obj.class})"
+    end
+
+    def location_str
+      location.join(' > ')
     end
 
     include TreeGraph
 
     def label_for_tree_graph
-      name
+      return label unless ref
+      "#{label} => #{ref.location_str}"
     end
 
     def children_for_tree_graph
@@ -42,8 +51,8 @@ class Recursivar
   attr_reader :start
 
   def initialize(obj, out: STDOUT, name: nil)
-    name ||= "#<#{obj.class}:#{obj.object_id}>"
-    @start = Var.new(name, obj, {})
+    name ||= "#<#{obj.object_id}>"
+    @start = Var.new(name, obj, [], {})
     @out = out
   end
 

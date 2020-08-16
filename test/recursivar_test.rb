@@ -51,17 +51,17 @@ class RecursivarTest < Minitest::Test
   end
 
   ReturnValue = <<EOS
-testing
+testing (RecursivarTest::A)
 ├─@b (RecursivarTest::A::B)
-│ └─@itself (RecursivarTest::A::B)
+│ └─@itself (RecursivarTest::A::B) => testing > @b
 ├─@c (RecursivarTest::A::C)
-│ └─@parent (RecursivarTest::A)
+│ └─@parent (RecursivarTest::A) => testing
 ├─@d (RecursivarTest::A::D)
-│ ├─@sibling (RecursivarTest::A::B)
+│ ├─@sibling (RecursivarTest::A::B) => testing > @b
 │ └─@deep (RecursivarTest::A::D::Deep)
 │   └─@deep (Integer)
 ├─@e (RecursivarTest::A::E)
-│ └─@cousin (Integer)
+│ └─@cousin (Integer) => testing > @d > @deep > @deep
 └─@m (Module)
 EOS
 
