@@ -5,7 +5,9 @@ class RecursivarTest < Minitest::Test
   class A
     def initialize
       @b = B.new
-      @c = C.new
+      @c = C.new(self)
+      @d = D.new(@b)
+      @e = E.new(@d.deep)
       @m = M
     end
 
@@ -14,17 +16,52 @@ class RecursivarTest < Minitest::Test
         @itself = self
       end
     end
+
+    class C
+      def initialize(parent)
+        @parent = parent
+      end
+    end
+
+    class D
+      def initialize(sibling)
+        @sibling = sibling
+        @deep = Deep.new
+      end
+
+      def deep
+        @deep.deep
+      end
+
+      class Deep
+        attr_reader :deep
+        def initialize
+          @deep = 123
+        end
+      end
+    end
+
+    class E
+      def initialize(cousin)
+        @cousin = cousin
+      end
+    end
+
+    module M; end
   end
 
-  class C; end
-
-  module M; end
-
   ReturnValue = <<EOS
-testing
+testing (RecursivarTest::A)
 ├─@b (RecursivarTest::A::B)
-│ └─@itself (RecursivarTest::A::B)
-├─@c (RecursivarTest::C)
+│ └─@itself (RecursivarTest::A::B) # > @b
+├─@c (RecursivarTest::A::C)
+│ └─@parent (RecursivarTest::A) #
+├─@d (RecursivarTest::A::D)
+│ ├─@sibling (RecursivarTest::A::B) # > @b
+│ └─@deep (RecursivarTest::A::D::Deep)
+│   └─@deep (Integer)
+├─@e (RecursivarTest::A::E)
+│ └─@cousin (Integer) # > @d > @deep > @deep
 └─@m (Module)
 EOS
 
@@ -34,9 +71,13 @@ EOS
   end
 
   def test_trace_tree
-    rt = @a.recursivar(out: @sio, name: :testing)
+    rt = @a.recursivar(out: @sio, name: :testing, color: false)
     @sio.rewind
 
     assert_equal ReturnValue, @sio.read
+  end
+
+  def test_normale_print
+    @a.recursivar
   end
 end
