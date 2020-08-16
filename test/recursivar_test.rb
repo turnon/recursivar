@@ -21,7 +21,7 @@ class RecursivarTest < Minitest::Test
   module M; end
 
   ReturnValue = <<EOS
-testing (RecursivarTest::A)
+testing
 ├─@b (RecursivarTest::A::B)
 │ └─@itself (RecursivarTest::A::B)
 ├─@c (RecursivarTest::C)

@@ -23,14 +23,15 @@ class Recursivar
 
       obj.instance_variables.map do |name|
         value = obj.instance_variable_get(name)
-        @vars << Var.new(name, value, seen)
+        label = "#{name} (#{value.class})"
+        @vars << Var.new(label, value, seen)
       end
     end
 
     include TreeGraph
 
     def label_for_tree_graph
-      "#{name} (#{obj.class})"
+      name
     end
 
     def children_for_tree_graph
