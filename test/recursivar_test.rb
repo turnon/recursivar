@@ -70,14 +70,18 @@ EOS
     @sio = StringIO.new
   end
 
-  def test_trace_tree
-    rt = @a.recursivar(out: @sio, name: :testing, color: false)
+  def test_match
+    rt = @a.recursivar(out: @sio, name: :testing, color: false, format: :tree_graph)
     @sio.rewind
 
     assert_equal ReturnValue, @sio.read
   end
 
-  def test_normale_print
+  def test_tree_graph
+    @a.recursivar(out: STDOUT, format: :tree_graph)
+  end
+
+  def test_tree_html
     @a.recursivar
   end
 end
