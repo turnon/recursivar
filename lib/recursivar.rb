@@ -1,5 +1,6 @@
 require "recursivar/version"
-require "tree_graph"
+require "recursivar/tmp_file"
+require "recursivar/formats"
 
 class Object
   def recursivar(**opt)
@@ -10,10 +11,13 @@ end
 class Recursivar
 
   class Var
-    attr_reader :name, :obj, :ref, :vars, :location
+    include Formats
+
+    attr_reader :name, :klass, :obj, :ref, :vars, :location
 
     def initialize(name, obj, loc, seen)
       @name = name
+      @klass = obj.class
       @obj = obj
       @vars = []
       @location = loc
@@ -30,55 +34,26 @@ class Recursivar
       end
     end
 
-    def label
-      "#{name} (#{obj.class})"
-    end
-
     def location_str
       location.join(' > ')
-    end
-
-    include TreeGraph
-
-    def label_for_tree_graph
-      return label unless ref
-      "#{label} #{ref.location_str}"
-    end
-
-    def children_for_tree_graph
-      vars
-    end
-  end
-
-  module Color
-    def label
-      "#{colorize name} (#{obj.class})"
-    end
-
-    def location_str
-      colorize super
-    end
-
-    private
-
-    def colorize(str)
-      "\e[1m\e[32m#{str}\e[0m"
     end
   end
 
   attr_reader :start
 
-  def initialize(obj, out: STDOUT, name: nil, color: true)
+  def initialize(obj, out: false, name: nil, color: true, format: :tree_html_full)
     name ||= "#<#{obj.object_id}>"
 
     var_klass = Var.clone
-    var_klass = var_klass.prepend Color if color
+    var_klass = var_klass.prepend Formats::Color if color
 
     @start = var_klass.new(name, obj, ['#'], {})
-    @out = out
+    @out = out || TmpFile.new(obj, format)
+    @format = format
   end
 
   def print
-    @out.puts start.tree_graph
+    @out.puts start.send(@format)
   end
+
 end
