@@ -5,23 +5,39 @@ require "cgi"
 class Recursivar
   module Formats
 
-    include TreeGraph
+    module TextWithoutColor
+      include TreeGraph
 
-    def label_for_tree_graph
-      label = "#{name} (#{obj.class})"
-      return label unless ref
-      "#{label} #{ref.location_str}"
+      def label_for_tree_graph
+        label = "#{name} (#{obj.class})"
+        return label unless ref
+        "#{label} #{ref.location_str}"
+      end
+
+      def children_for_tree_graph
+        vars
+      end
+
+      def to_s
+        tree_graph
+      end
     end
 
-    def children_for_tree_graph
-      vars
-    end
+    module Text
+      include TreeGraph
 
-    module Color
       def label_for_tree_graph
         label = "#{colorize name} (#{klass})"
         return label unless ref
         "#{label} #{colorize ref.location_str}"
+      end
+
+      def children_for_tree_graph
+        vars
+      end
+
+      def to_s
+        tree_graph
       end
 
       private
@@ -31,20 +47,27 @@ class Recursivar
       end
     end
 
-    include TreeHtml
+    module Html
+      include TreeHtml
 
-    def label_for_tree_html
-      label = "<span class='highlight'>#{name}</span> #{klass}"
-      return label unless ref
-      "#{label} <span class='highlight'>#{CGI::escapeHTML ref.location_str}</span>"
+      def label_for_tree_html
+        label = "<span class='highlight'>#{name}</span> #{klass}"
+        return label unless ref
+        "#{label} <span class='highlight'>#{CGI::escapeHTML ref.location_str}</span>"
+      end
+
+      def children_for_tree_html
+        vars
+      end
+
+      def css_for_tree_html
+        '.highlight{color: #a50000;}'
+      end
+
+      def to_s
+        tree_html_full
+      end
     end
 
-    def children_for_tree_html
-      vars
-    end
-
-    def css_for_tree_html
-      '.highlight{color: #a50000;}'
-    end
   end
 end

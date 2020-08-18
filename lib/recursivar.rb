@@ -11,8 +11,6 @@ end
 class Recursivar
 
   class Var
-    include Formats
-
     attr_reader :name, :klass, :obj, :ref, :vars, :location
 
     def initialize(name, obj, loc, seen)
@@ -41,19 +39,18 @@ class Recursivar
 
   attr_reader :start
 
-  def initialize(obj, out: false, name: nil, color: true, format: :tree_html_full)
+  def initialize(obj, out: false, name: nil, format: :Html)
     name ||= "#<#{obj.object_id}>"
 
     var_klass = Var.clone
-    var_klass = var_klass.prepend Formats::Color if color
+    var_klass = var_klass.include Formats.const_get(format)
 
     @start = var_klass.new(name, obj, ['#'], {})
     @out = out || TmpFile.new(obj, format)
-    @format = format
   end
 
   def print
-    @out.puts start.send(@format)
+    @out.puts start.to_s
   end
 
 end

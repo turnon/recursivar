@@ -71,14 +71,14 @@ EOS
   end
 
   def test_match
-    rt = @a.recursivar(out: @sio, name: :testing, color: false, format: :tree_graph)
+    rt = @a.recursivar(out: @sio, name: :testing, format: :TextWithoutColor)
     @sio.rewind
 
     assert_equal ReturnValue, @sio.read
   end
 
   def test_tree_graph
-    @a.recursivar(out: STDOUT, format: :tree_graph)
+    @a.recursivar(out: STDOUT, format: :Text)
   end
 
   def test_tree_html
