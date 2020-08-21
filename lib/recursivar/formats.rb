@@ -1,6 +1,7 @@
 require "tree_graph"
 require "tree_html"
 require "cgi"
+require "macrocosm"
 
 class Recursivar
   module Formats
@@ -66,6 +67,40 @@ class Recursivar
 
       def to_s
         tree_html_full
+      end
+    end
+
+    module Graph
+      def each_nodes(&block)
+        block.call(label)
+        vars.each do |v|
+          v.each_nodes(&block) unless v.ref
+        end
+      end
+
+      def each_links(&block)
+        vars.each do |v|
+          block.call(label, v.name, v.label)
+          v.each_links(&block)
+        end
+      end
+
+      def label
+        "#<#{klass}:#{obj.object_id}>"
+      end
+
+      def to_s
+        g = Macrocosm.new
+
+        each_nodes do |n|
+          g.add_node(n ,n)
+        end
+
+        each_links do |n1, var_name, n2|
+          g.add_link(n1, n2, relation_in_list: var_name, relation_in_graph: var_name)
+        end
+
+        g.to_s
       end
     end
 

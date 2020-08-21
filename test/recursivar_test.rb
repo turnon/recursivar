@@ -84,4 +84,8 @@ EOS
   def test_tree_html
     @a.recursivar
   end
+
+  def test_macrocosm
+    @a.recursivar(format: :Graph)
+  end
 end

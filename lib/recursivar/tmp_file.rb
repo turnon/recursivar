@@ -13,7 +13,7 @@ class Recursivar
         '_',
         obj.object_id,
         '.',
-        Formats[format]
+        (Formats[format] || :html)
       ].join
 
       @path = File.join(Dir.tmpdir, name)
