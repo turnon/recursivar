@@ -90,7 +90,7 @@ class Recursivar
       end
 
       def to_s
-        g = Macrocosm.new
+        g = Macrocosm.new(curveness: 0.2)
 
         each_nodes do |n|
           g.add_node(n ,n)
