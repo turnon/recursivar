@@ -1,19 +1,13 @@
 class Recursivar
+
   class TmpFile
-
-    Formats = {
-      tree_html_full: :html,
-      tree_graph: :txt
-    }
-
-    def initialize(obj, format)
+    def initialize(obj)
       name = [
         Time.now.strftime('%Y%m%d_%H%M%S_%L_'),
         obj.class.to_s.split('::').map(&:downcase).join('_'),
         '_',
         obj.object_id,
-        '.',
-        (Formats[format] || :html)
+        '.html',
       ].join
 
       @path = File.join(Dir.tmpdir, name)
@@ -25,4 +19,5 @@ class Recursivar
       end
     end
   end
+
 end

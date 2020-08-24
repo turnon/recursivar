@@ -50,42 +50,9 @@ class RecursivarTest < Minitest::Test
     module M; end
   end
 
-  ReturnValue = <<EOS
-testing (RecursivarTest::A)
-├─@b (RecursivarTest::A::B)
-│ └─@itself (RecursivarTest::A::B) # > @b
-├─@c (RecursivarTest::A::C)
-│ └─@parent (RecursivarTest::A) #
-├─@d (RecursivarTest::A::D)
-│ ├─@sibling (RecursivarTest::A::B) # > @b
-│ └─@deep (RecursivarTest::A::D::Deep)
-│   └─@deep (Integer)
-├─@e (RecursivarTest::A::E)
-│ └─@cousin (Integer) # > @d > @deep > @deep
-└─@m (Module)
-EOS
-
-  def setup
-    @a = A.new
-    @sio = StringIO.new
-  end
-
-  def test_match
-    rt = @a.recursivar(out: @sio, name: :testing, format: :TextWithoutColor)
-    @sio.rewind
-
-    assert_equal ReturnValue, @sio.read
-  end
-
-  def test_tree_graph
-    @a.recursivar(out: STDOUT, format: :Text)
-  end
-
-  def test_tree_html
-    @a.recursivar
-  end
 
   def test_macrocosm
-    @a.recursivar(format: :Graph)
+    a = A.new
+    a.recursivar
   end
 end
