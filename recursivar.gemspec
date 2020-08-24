@@ -30,5 +30,5 @@ Gem::Specification.new do |spec|
 
   spec.add_dependency "tree_graph", "~> 0.2.2"
   spec.add_dependency "tree_html", "~> 0.1.7"
-  spec.add_dependency "macrocosm", "-> 0.1.0"
+  # spec.add_dependency "macrocosm", "-> 0.1.0"
 end
