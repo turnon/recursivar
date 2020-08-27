@@ -31,5 +31,5 @@ Gem::Specification.new do |spec|
   spec.add_dependency "binding_of_callers", "~> 0.1.8"
   spec.add_dependency "tree_graph", "~> 0.2.2"
   spec.add_dependency "tree_html", "~> 0.1.7"
-  spec.add_dependency "macrocosm", "-> 0.1.0"
+  spec.add_dependency "macrocosm", "~> 0.1.0"
 end
