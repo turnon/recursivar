@@ -3,15 +3,16 @@ class Recursivar
   class Heap
 
     class Value
-      attr_reader :obj, :values
+      attr_reader :obj, :values, :callees
 
       def initialize(obj)
         @obj = obj
         @values = {}
+        @callees = nil
       end
 
       def inspect
-        @inspect ||= "#<#{klass}:#{@obj.object_id}>"
+        @inspect ||= "#{klass}:#{@obj.object_id}"
       end
 
       def klass
@@ -27,6 +28,10 @@ class Recursivar
           @values[name] = heap.ref(value)
         end
       end
+
+      def add_callee(callee, level)
+        (@callees ||= {})[level] = callee
+      end
     end
 
     attr_reader :heap
@@ -34,7 +39,7 @@ class Recursivar
     def initialize(stack)
       @heap = {}
 
-      stack.each do |callor|
+      stack.each_with_index do |callor, idx|
         local_values = {}
         callor.lv.each_pair do |name, obj|
           local_values[name] = ref(obj)
@@ -42,7 +47,15 @@ class Recursivar
 
         callor_v = wrap_caller(callor)
         callor_v.values.merge!(local_values)
+
+        callee = stack[idx - 1]
+        link_callee(callor_v, callee, "#{idx} #{callee.frame_env}") if idx > 0
       end
+    end
+
+    def link_callee(callor, callee, level)
+      callee = @heap[callee.send(:binding_self).object_id]
+      callor.add_callee(callee, level)
     end
 
     def wrap_caller(callor)
