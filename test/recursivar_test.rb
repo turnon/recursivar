@@ -2,6 +2,13 @@ require "test_helper"
 
 class RecursivarTest < Minitest::Test
 
+  class Z
+    def test_recursivar
+      a = A.new
+      a.recursivar
+    end
+  end
+
   class A
     def initialize
       @b = B.new
@@ -52,7 +59,7 @@ class RecursivarTest < Minitest::Test
 
 
   def test_macrocosm
-    a = A.new
-    a.recursivar
+    z = Z.new
+    z.test_recursivar
   end
 end
